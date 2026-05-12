@@ -1,0 +1,37 @@
+name: personnel_appraisal
+description: TaskNet — Personnel Appraisal Module for Naga Central School II
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Charts
+  fl_chart: ^0.68.0
+
+  # State management (add later with backend)
+  flutter_riverpod: ^2.5.1
+
+  # HTTP (add later)
+  dio: ^5.4.3
+
+  # Secure storage for JWT
+  flutter_secure_storage: ^9.0.0
+
+  # Routing
+  go_router: ^13.0.0
+
+  # Date formatting
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
