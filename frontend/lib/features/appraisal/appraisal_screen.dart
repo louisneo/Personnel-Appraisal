@@ -74,10 +74,7 @@ class _PageHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
       decoration: const BoxDecoration(
-        color: AppColors.cardBg,
-        border: Border(
-          bottom: BorderSide(color: AppColors.divider, width: 1),
-        ),
+        color: AppColors.pageBg,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,24 +129,26 @@ class _PageHeader extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // ── Underline-style tab bar ─────────────────────────────────────
+          // ── Pill-style tab bar ──────────────────────────────────────────
           Row(
             children: [
-              _UnderlineTab(
+              _PillTab(
                 icon: Icons.assignment_outlined,
                 label: 'Special Tasks',
                 badge: 1,
                 active: activeTab == _AppraisalTab.specialTasks,
                 onTap: () => onTabChanged(_AppraisalTab.specialTasks),
               ),
-              _UnderlineTab(
+              const SizedBox(width: 10),
+              _PillTab(
                 icon: Icons.calendar_today_outlined,
                 label: 'Events',
                 badge: 1,
                 active: activeTab == _AppraisalTab.events,
                 onTap: () => onTabChanged(_AppraisalTab.events),
               ),
-              _UnderlineTab(
+              const SizedBox(width: 10),
+              _PillTab(
                 icon: Icons.bar_chart_outlined,
                 label: 'Analytics',
                 badge: 0,
@@ -164,16 +163,16 @@ class _PageHeader extends StatelessWidget {
   }
 }
 
-// ── Underline tab item ────────────────────────────────────────────────────────
+// ── Pill tab button ───────────────────────────────────────────────────────────
 
-class _UnderlineTab extends StatefulWidget {
+class _PillTab extends StatefulWidget {
   final IconData icon;
   final String label;
   final int badge;
   final bool active;
   final VoidCallback onTap;
 
-  const _UnderlineTab({
+  const _PillTab({
     required this.icon,
     required this.label,
     required this.badge,
@@ -182,16 +181,14 @@ class _UnderlineTab extends StatefulWidget {
   });
 
   @override
-  State<_UnderlineTab> createState() => _UnderlineTabState();
+  State<_PillTab> createState() => _PillTabState();
 }
 
-class _UnderlineTabState extends State<_UnderlineTab> {
+class _PillTabState extends State<_PillTab> {
   bool _hovered = false;
 
   @override
   Widget build(BuildContext context) {
-    final bool highlighted = widget.active || _hovered;
-
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
@@ -199,22 +196,23 @@ class _UnderlineTabState extends State<_UnderlineTab> {
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
-          margin: const EdgeInsets.only(right: 4),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            // Underline indicator at bottom
-            border: Border(
-              bottom: BorderSide(
-                color: widget.active
-                    ? AppColors.tabActive
-                    : Colors.transparent,
-                width: 2,
-              ),
+            color: widget.active
+                ? AppColors.tabActive
+                : _hovered
+                    ? AppColors.tableRowHover
+                    : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: widget.active
+                  ? AppColors.tabActive
+                  : AppColors.cardBorder,
+              width: 1,
             ),
-            // Subtle hover background
-            color: _hovered && !widget.active
-                ? AppColors.tableRowHover
-                : Colors.transparent,
+            boxShadow: widget.active
+                ? [BoxShadow(color: AppColors.tabActive.withOpacity(0.18), blurRadius: 8, offset: const Offset(0, 3))]
+                : null,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -222,26 +220,28 @@ class _UnderlineTabState extends State<_UnderlineTab> {
               Icon(
                 widget.icon,
                 size: 15,
-                color: widget.active
-                    ? AppColors.tabActive
-                    : highlighted
-                        ? AppColors.textSecondary
-                        : AppColors.textHint,
+                color: widget.active ? Colors.white : AppColors.textSecondary,
               ),
               const SizedBox(width: 6),
               Text(
                 widget.label,
-                style: widget.active
-                    ? AppTextStyles.tabLabelActive
-                    : AppTextStyles.tabLabel,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: widget.active ? Colors.white : AppColors.textSecondary,
+                ),
               ),
               if (widget.badge > 0) ...[
                 const SizedBox(width: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 5, vertical: 1),
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                   decoration: BoxDecoration(
-                    color: AppColors.danger,
+                    // CHANGED: was Colors.white.withOpacity(0.3) on active —
+                    // now solid orange on active, solid red on inactive,
+                    // matching the screenshot badges exactly.
+                    color: widget.active
+                        ? const Color(0xFFEA580C)   // orange badge on active tab
+                        : AppColors.danger,          // red badge on inactive tab
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(

@@ -203,7 +203,7 @@ class _TopPerformers extends StatelessWidget {
         .asMap()
         .entries
         .toList()
-        .sublist(0, 5);
+        .sublist(0, sampleFaculty.length.clamp(0, 5));
 
     return ListView.builder(
       shrinkWrap: true,

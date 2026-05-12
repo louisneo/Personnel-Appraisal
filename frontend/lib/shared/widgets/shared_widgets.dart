@@ -355,6 +355,7 @@ class StatCard extends StatelessWidget {
   final String label;
   final String value;
   final Color valueColor;
+  final String? subtitle;
   final Widget? icon;
 
   const StatCard({
@@ -362,6 +363,7 @@ class StatCard extends StatelessWidget {
     required this.label,
     required this.value,
     required this.valueColor,
+    this.subtitle,
     this.icon,
   });
 
@@ -400,6 +402,10 @@ class StatCard extends StatelessWidget {
               letterSpacing: -0.3,
             ),
           ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 6),
+            Text(subtitle!, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+          ],
         ],
       ),
     );

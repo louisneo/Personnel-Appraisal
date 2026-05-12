@@ -31,12 +31,12 @@ class AppColors {
   static const Color cardBg = Color(0xFFFFFFFF);
   static const Color pageBg = Color(0xFFF0F2F7);
 
-  // ── Sidebar ───────────────────────────────────────────────────────────────
-  static const Color sidebarBg = Color(0xFF7B95B8);         // Steel blue
-  static const Color sidebarText = Color(0xFFFFFFFF);       // White text
-  static const Color sidebarMuted = Color(0xFFB8CCE0);      // Muted white-blue
-  static const Color sidebarActiveItem = Color(0xFF5B7898); // Darker active
-  static const Color sidebarHover = Color(0xFF6A87AB);      // Hover mid-tone
+  // ── Sidebar (unchanged) ───────────────────────────────────────────────────
+  static const Color sidebarBg = Color(0xFF7B95B8);
+  static const Color sidebarText = Color(0xFFFFFFFF);
+  static const Color sidebarMuted = Color(0xFFB8CCE0);
+  static const Color sidebarActiveItem = Color(0xFF5B7898);
+  static const Color sidebarHover = Color(0xFF6A87AB);
 
   // Trend
   static const Color trendUp = Color(0xFF10B981);
@@ -56,31 +56,32 @@ class AppColors {
   static const Color notSubmittedFg = Color(0xFF808080);
 
   // ── Tab bar ───────────────────────────────────────────────────────────────
-  static const Color tabActive = Color(0xFF5B7898);
-  static const Color tabActiveFg = Color(0xFF5B7898);   // text color (not white — underline style)
-  static const Color tabBorder = Color(0xFFE5E7EB);
+  // Active tab color (steel blue used in design)
+  static const Color tabActive    = Color(0xFF7B95B8);
+  static const Color tabActiveFg  = Color(0xFFFFFFFF);
+  static const Color tabBorder    = Color(0xFFE5E7EB);
 
-  // ── Info Banner — FIXED from purple to light blue ─────────────────────────
-  static const Color infoBannerBg = Color(0xFFEFF6FF);
-  static const Color infoBannerFg = Color(0xFF1D4ED8);
+  // ── Info Banner ───────────────────────────────────────────────────────────
+  static const Color infoBannerBg  = Color(0xFFEFF6FF);
+  static const Color infoBannerFg  = Color(0xFF1D4ED8);
   static const Color infoBannerBdr = Color(0xFFBFDBFE);
   static const Color infoBannerIcon = Color(0xFF3B82F6);
 
   // Warning Banner
-  static const Color warningBannerBg = Color(0xFFFFF7ED);
-  static const Color warningBannerFg = Color(0xFF92400E);
+  static const Color warningBannerBg  = Color(0xFFFFF7ED);
+  static const Color warningBannerFg  = Color(0xFF92400E);
   static const Color warningBannerBdr = Color(0xFFFED7AA);
 
   // Misc
   static const Color submittedDate = Color(0xFF6B7280);
-  static const Color divider = Color(0xFFE5E7EB);
+  static const Color divider       = Color(0xFFE5E7EB);
   static const Color tableHeaderBg = Color(0xFFF8FAFC);
   static const Color tableRowHover = Color(0xFFF9FAFB);
 }
 
 class AppTextStyles {
   static const TextStyle pageTitle = TextStyle(
-    fontSize: 22,
+    fontSize: 30,
     fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
     letterSpacing: -0.4,
@@ -124,14 +125,12 @@ class AppTextStyles {
     color: AppColors.textSecondary,
   );
 
-  // Active tab label — uses tabActiveFg (dark blue, underline style)
   static const TextStyle tabLabelActive = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w600,
     color: AppColors.tabActiveFg,
   );
 
-  // Sidebar nav text
   static const TextStyle sidebarNav = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w400,
