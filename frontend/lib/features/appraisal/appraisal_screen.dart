@@ -15,7 +15,14 @@ class AppraisalScreen extends StatefulWidget {
 }
 
 class _AppraisalScreenState extends State<AppraisalScreen> {
-  _AppraisalTab _activeTab = _AppraisalTab.analytics;
+  _AppraisalTab _activeTab = _AppraisalTab.specialTasks;
+
+  // Build the header once and pass it into the active tab so it scrolls
+  // together with the tab content. Only the sidebar stays fixed.
+  Widget _buildHeader() => _PageHeader(
+        activeTab: _activeTab,
+        onTabChanged: (t) => setState(() => _activeTab = t),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -23,45 +30,40 @@ class _AppraisalScreenState extends State<AppraisalScreen> {
       backgroundColor: AppColors.pageBg,
       body: Row(
         children: [
+          // ── Sidebar — never scrolls ──────────────────────────────────────
           AppSidebar(activeIndex: 2, onNavTap: (_) {}),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _PageHeader(
-                  activeTab: _activeTab,
-                  onTabChanged: (t) => setState(() => _activeTab = t),
-                ),
-                Expanded(
-                  child: Container(
-                    color: AppColors.pageBg,
-                    child: _tabBody(),
-                  ),
-                ),
-              ],
-            ),
-          ),
+
+          // ── Content area — fully scrollable ─────────────────────────────
+          Expanded(child: _tabBody()),
         ],
       ),
     );
   }
 
   Widget _tabBody() {
+    // Pass the pre-built header widget into each tab.
+    // The tab places it at the top of its SingleChildScrollView so the title,
+    // subtitle, breadcrumb, and tab buttons all scroll with the content.
+    final header = _buildHeader();
+
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 180),
       child: KeyedSubtree(
         key: ValueKey(_activeTab),
         child: switch (_activeTab) {
-          _AppraisalTab.specialTasks => const SpecialTasksTab(),
-          _AppraisalTab.events => const EventsTab(),
-          _AppraisalTab.analytics => const AnalyticsTab(),
+          _AppraisalTab.specialTasks => SpecialTasksTab(pageHeader: header),
+          _AppraisalTab.events       => EventsTab(pageHeader: header),
+          _AppraisalTab.analytics    => AnalyticsTab(pageHeader: header),
         },
       ),
     );
   }
 }
 
-// ── Page header ───────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Page header  (breadcrumb + title + subtitle + tab pills)
+// Kept here so the tab-switching callbacks stay in one place.
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _PageHeader extends StatelessWidget {
   final _AppraisalTab activeTab;
@@ -72,54 +74,36 @@ class _PageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-      decoration: const BoxDecoration(
-        color: AppColors.pageBg,
-      ),
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+      color: AppColors.pageBg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Breadcrumb
+          // ── Breadcrumb + action buttons ──────────────────────────────────
           Row(
             children: [
-              const Text(
-                'Home',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textHint,
-                ),
-              ),
+              const Text('Home',
+                  style: TextStyle(fontSize: 12, color: AppColors.textHint)),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 6),
-                child: Icon(Icons.chevron_right,
-                    size: 14, color: AppColors.textHint),
+                child: Icon(Icons.chevron_right, size: 14, color: AppColors.textHint),
               ),
-              const Text(
-                'Appraisal',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              const Text('Appraisal',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500)),
               const Spacer(),
-              // Right-side actions
-              TableActionButton(
-                label: 'Export Report',
-                outlined: true,
-                onTap: () {},
-              ),
+              TableActionButton(label: 'Export Report', outlined: true, onTap: () {}),
               const SizedBox(width: 8),
-              TableActionButton(
-                label: 'Lock Appraisal',
-                onTap: () {},
-              ),
+              TableActionButton(label: 'Lock Appraisal', onTap: () {}),
             ],
           ),
 
           const SizedBox(height: 14),
 
-          // Title + subtitle
+          // ── Title + subtitle ─────────────────────────────────────────────
           const Text('Performance Appraisal', style: AppTextStyles.pageTitle),
           const SizedBox(height: 4),
           const Text(
@@ -129,7 +113,7 @@ class _PageHeader extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // ── Pill-style tab bar ──────────────────────────────────────────
+          // ── Pill-style tab bar ───────────────────────────────────────────
           Row(
             children: [
               _PillTab(
@@ -163,7 +147,9 @@ class _PageHeader extends StatelessWidget {
   }
 }
 
-// ── Pill tab button ───────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Pill tab button
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _PillTab extends StatefulWidget {
   final IconData icon;
@@ -205,23 +191,25 @@ class _PillTabState extends State<_PillTab> {
                     : Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: widget.active
-                  ? AppColors.tabActive
-                  : AppColors.cardBorder,
+              color: widget.active ? AppColors.tabActive : AppColors.cardBorder,
               width: 1,
             ),
             boxShadow: widget.active
-                ? [BoxShadow(color: AppColors.tabActive.withOpacity(0.18), blurRadius: 8, offset: const Offset(0, 3))]
+                ? [
+                    BoxShadow(
+                      color: AppColors.tabActive.withOpacity(0.18),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    )
+                  ]
                 : null,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                widget.icon,
-                size: 15,
-                color: widget.active ? Colors.white : AppColors.textSecondary,
-              ),
+              Icon(widget.icon,
+                  size: 15,
+                  color: widget.active ? Colors.white : AppColors.textSecondary),
               const SizedBox(width: 6),
               Text(
                 widget.label,
@@ -234,14 +222,12 @@ class _PillTabState extends State<_PillTab> {
               if (widget.badge > 0) ...[
                 const SizedBox(width: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                   decoration: BoxDecoration(
-                    // CHANGED: was Colors.white.withOpacity(0.3) on active —
-                    // now solid orange on active, solid red on inactive,
-                    // matching the screenshot badges exactly.
                     color: widget.active
-                        ? const Color(0xFFEA580C)   // orange badge on active tab
-                        : AppColors.danger,          // red badge on inactive tab
+                        ? const Color(0xFFEA580C)
+                        : AppColors.danger,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
