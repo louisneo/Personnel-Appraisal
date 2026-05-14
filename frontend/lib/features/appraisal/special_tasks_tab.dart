@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
 import '../../shared/widgets/shared_widgets.dart';
+import '../../core/api_service.dart';
 import 'models/appraisal_models.dart';
 
 enum _FilterMode { all, byPersonnel, byTask }
@@ -482,10 +483,19 @@ class _SpecialTasksTabState extends State<SpecialTasksTab> {
                       _SpecialTaskTable(
                         tasks: _filteredTasks,
                         evaluations: _evaluations,
-                        onSubmitEvaluation: (id, result) {
-                          setState(() {
-                            _evaluations[id] = result;
-                          });
+                        onSubmitEvaluation: (id, result) async {
+                          // Try to persist to backend first; fallback to local store
+                          try {
+                            final api = SpecialTasksApi();
+                            final resp = await api.evaluateTask(id, result);
+                            setState(() {
+                              _evaluations[id] = resp['evaluation'] ?? result;
+                            });
+                          } catch (err) {
+                            setState(() {
+                              _evaluations[id] = result;
+                            });
+                          }
                         },
                       ),
                       const SizedBox(height: 8),

@@ -149,6 +149,7 @@ ThemeData buildAppTheme() {
       secondary: AppColors.chartTask,
       surface: AppColors.cardBg,
       error: AppColors.danger,
+      background: AppColors.pageBg,
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.pageBg,
